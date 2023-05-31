@@ -1,0 +1,4 @@
+suites:
+    venue:
+        namespace: Venue
+        psr4_prefix: Venue

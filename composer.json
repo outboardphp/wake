@@ -1,0 +1,28 @@
+{
+	"name": "garrettw/venue",
+	"description": "PHP event library following the Mediator behavioral pattern implemented like an Observer",
+	"keywords": ["event","listener","hook","mediator","publish-subscribe","observer"],
+	"type": "library",
+	"homepage": "https://github.com/garrettw/venue",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Garrett Whitehorn",
+			"homepage": "http://garrettw.net/",
+			"role": "Lead Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.4"
+	},
+	"require-dev": {
+		"php": ">=5.6",
+		"phpspec/phpspec": "~2.1",
+        "friendsofphp/php-cs-fixer": "~2.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"Venue\\": "src/"
+		}
+	}
+}
