@@ -23,12 +23,6 @@ class Event implements StoppableEventInterface
 {
     /**
      * @api
-     * @var array Contains the event's data
-     */
-    private $data;
-
-    /**
-     * @api
      * @var mixed Who published this event
      */
     private $caller;
@@ -41,7 +35,7 @@ class Event implements StoppableEventInterface
 
     /**
      * @api
-     * @var Mediator|null An instance of the main Mediator class
+     * @var Dispatcher|null An instance of the main Dispatcher class
      */
     private $dispatcher = null;
 
@@ -50,6 +44,9 @@ class Event implements StoppableEventInterface
      * @var array Contains the "return" values of previously-called event listeners
      */
     private $previousResults = [];
+
+    /** @var array Contains the event's data */
+    private $data;
 
     /**
      * Constructor method of Event.

@@ -10,7 +10,7 @@ use Psr\EventDispatcher\ListenerProviderInterface;
  *
  * @version 1.0
  */
-class Mediator implements EventDispatcherInterface
+class Dispatcher implements EventDispatcherInterface
 {
     /**
      * @var array Holds any published events to which no handler has yet subscribed

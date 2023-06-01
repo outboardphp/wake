@@ -9,7 +9,7 @@ namespace Venue;
  *
  * @version 1.0
  */
-class Manager
+class ListenerProvider
 {
     const PRIORITY_URGENT = 0;
     const PRIORITY_HIGHEST = 1;
