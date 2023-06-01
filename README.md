@@ -5,32 +5,30 @@
 Venue
 ======
 
-Venue is a PHP event library implementing the Mediator behavioral pattern in an Observer style.
+Venue is a PHP event library implementing the Mediator and Observer patterns.
 
 **"Why should I use Venue instead of all the other event libraries out there?"**
 
 Because Venue:
-- Uses standard Observer-pattern terminology (publish/subscribe)
-- Can optionally hang onto published events for which there is no subscriber until such time as a handler subscribes to it
+- Uses standard PSR-14 terminology
+- Can optionally hang onto dispatched events for which there is no listener until such time as one starts listening for it
 - Supports timer events in addition to normal published events
-- Allows handlers to subscribe to any and all events if they want
-- Encapsulates event information in an object that gets passed to handlers
-- Event objects can hold custom data set by the publisher for handlers to use
-- Event objects allow handlers to access the objects that published them
-- Event objects allow handlers to access previous handler output (for daisy-chaining)
-- Event objects can prevent further daisy-chaining by calling setCancelled()
-- Handlers can be simple anonymous functions or contained in observer objects; anything callable
+- Allows listeners to watch any and all events if they want
+- Encapsulates event information in an object that gets passed to listeners
+- Event objects can hold custom data set by the emitter for listeners to use
+- Event objects allow listeners to access the context that published them
+- Event objects allow listeners to access previous listener output (for daisy-chaining)
+- Event objects can prevent further daisy-chaining by setting stopPropagation
 - Observer objects can define handlers explicitly or use on*() method naming, where * is the capitalized event name
 
 Core Principles
 -------
-- Observers are objects with methods that are called by fired events.
-- Those methods are called handlers, or once they are registered, subscribers.
-- It is recommended (but optional) that observer objects be used to contain handlers.
+- Listeners are callables that watch for, and receive, published events.
+- It is recommended (but optional) that listener provider objects be used to contain listeners.
 
 Basic usage
 -------
-The idea is that you have multiple event handlers watching a single event hub, waiting for events they can handle.
+The idea is that you have multiple event listeners watching a single event hub, waiting for events they can handle.
 
 - First, you'll create child classes of Venue's abstract Observer class that contain handlers:
 ```php

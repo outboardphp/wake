@@ -2,139 +2,114 @@
 
 namespace Venue;
 
+use Psr\EventDispatcher\StoppableEventInterface;
+
 /**
- * Event Class.
+ * Event class.
  *
- * Objects of this class will be passed, whenever an event is fired, to all
- * handlers of said event along with their results. This class also allows
+ * Objects of this class will be passed to related listeners
+ * along with their results. This class also allows
  * event handlers to easily share information with other event handlers.
  *
  * Extend this class if you want to impose some sort of structure on the data
  * contained in your specific event type. You could validate the $data array or
  * add custom properties.
  *
- * @author  Garrett Whitehorn
- *
  * @version 1.0
  *
- * @property    string  $name   The name of the event
- * @property    mixed   $data   Contains the event's data
- * @property    mixed   $caller Who fired this event
- * @property    bool    $cancelled  Indicates if the event is cancelled
- * @property    Mediator|null   $mediator   An instance of the main Mediator class
- * @property    array   $previousResults    Contains the results of previous event handlers
- * @property    mixed   $previousResult Get = last result, set = adds a new result
+ * @property mixed $previousResult "return" value from the most recent listener
  */
-class Event
+class Event implements StoppableEventInterface
 {
     /**
      * @api
-     *
-     * @var string The name of the event
-     *
-     * @since   1.0
-     */
-    private $name;
-
-    /**
-     * @api
-     *
-     * @var mixed Contains the event's data
-     *
-     * @since   1.0
+     * @var array Contains the event's data
      */
     private $data;
 
     /**
      * @api
-     *
-     * @var mixed Who fired this event
-     *
-     * @since   1.0
+     * @var mixed Who published this event
      */
     private $caller;
 
     /**
      * @api
-     *
-     * @var bool Indicates if the event is cancelled
-     *
-     * @since   1.0
+     * @var bool Indicates whether further events should be handled
      */
-    private $cancelled = false;
+    private $stopPropagation = false;
 
     /**
      * @api
-     *
      * @var Mediator|null An instance of the main Mediator class
-     *
-     * @since   1.0
      */
-    private $mediator = null;
+    private $dispatcher = null;
 
     /**
      * @api
-     *
-     * @var array Contains the results of previous event handlers
-     *
-     * @since   1.0
+     * @var array Contains the "return" values of previously-called event listeners
      */
     private $previousResults = [];
 
     /**
      * Constructor method of Event.
      *
-     * All of these properties' usage details are left up to the event handler,
-     * so see your event handler to know what to pass here.
+     * All of these properties' usage details are left up to the event listener,
+     * so see your event listener to know what to pass here.
      *
-     * @api
-     *
-     * @param string $name   The name of the event
-     * @param mixed  $data   Data to be used by the event's handler (optional)
-     * @param mixed  $caller The calling object or class name (optional)
-     *
-     * @since   1.0
+     * @param array $data An array of values to be used by the event's listener (optional)
+     * @param mixed $caller The calling object or class name (optional)
      *
      * @version 1.0
      */
-    public function __construct($name, $data = null, $caller = null)
+    public function __construct($data = [], $caller = null)
     {
-        $this->name = $name;
         $this->data = $data;
         $this->caller = $caller;
     }
 
-    /**
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        if ($name == 'previousResult') {
-            return end($this->previousResults);
-        }
-
-        return $this->$name;
-    }
-
-    public function __set($name, $val)
+    public function __get(string $name)
     {
         switch ($name) {
             case 'previousResult':
-                $this->previousResults[] = $val;
+                return end($this->previousResults);
+            
+            case 'caller':
+            case 'stopPropagation':
+            case 'dispatcher':
+            case 'previousResults':
+                return $this->$name;
+
+            default:
+                return $this->data[$name];
+        }
+    }
+
+    public function __set(string $name, $val)
+    {
+        switch ($name) {
+            case 'stopPropagation':
+                $this->stopPropagation = (bool) $val;
                 break;
 
-            case 'cancelled':
-                $this->cancelled = (bool) $val;
-                break;
-
-            case 'mediator':
+            case 'dispatcher':
                 if ($val instanceof Observable || $val === null) {
-                    $this->mediator = $val;
+                    $this->dispatcher = $val;
                 }
                 break;
 
             default:
-                $this->$name = $val;
+                $this->data[$name] = $val;
         }
+    }
+
+    public function isPropagationStopped() : bool
+    {
+        return $this->stopPropagation;
+    }
+
+    public function return($val): void
+    {
+        $this->previousResults[] = $val;
     }
 }

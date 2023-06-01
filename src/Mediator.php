@@ -2,62 +2,46 @@
 
 namespace Venue;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
+
 /**
- * Main event pipeline.
- *
- * @author  Garrett Whitehorn
+ * Main event dispatcher.
  *
  * @version 1.0
  */
-class Mediator implements Observable
+class Mediator implements EventDispatcherInterface
 {
     /**
-     * @api
-     *
      * @var array Holds any published events to which no handler has yet subscribed
-     *
-     * @since   1.0
      */
     public $held = [];
 
     /**
-     * @internal
-     *
-     * @var bool Whether we should put published events for which there are no subscribers onto the list.
-     *
-     * @since   1.0
+     * @var bool Whether we should put published events for which there are no subscribers onto the list
      */
     protected $holdingUnheardEvents = false;
 
     /**
-     * @internal
-     *
-     * @var Manager
-     *
-     * @since 1.0
+     * @var ListenerProviderInterface[]
      */
-    protected $mgr;
+    protected $providers;
 
     /**
-     *
+     * @param ListenerProviderInterface[] $providers
      */
-    public function __construct(Manager $mgr)
+    public function __construct(array $providers)
     {
-        $this->mgr = $mgr;
+        $this->providers = $providers;
     }
 
     /**
-     * Registers event handler(s) to event name(s).
-     *
-     * @api
+     * Registers event listener(s).
      *
      * @throws BadMethodCallException if validation of any handler fails
      *
      * @param array $eventHandlers Associative array of event names & handlers
-     *
      * @return array The results of firing any held events
-     *
-     * @since   1.0
      *
      * @version 1.0
      */
@@ -103,25 +87,27 @@ class Mediator implements Observable
      *
      * @version 1.0
      */
-    public function publish(Event $event)
+    public function dispatch(Event $event)
     {
-        $event->mediator = $this;
-        $result = null;
+        $event->dispatcher = $this;
+        $handled = false;
 
-        // Make sure event is fired to any subscribers that listen to all events
-        // all is greedy, any is not - due to order
-        foreach (['all', $event->name, 'any'] as $eventName) {
-            if ($this->mgr->hasSubscribers($eventName)) {
-                $result = $this->mgr->fire($eventName, $event, $result);
+        foreach ($this->providers as $provider) {
+            /** @var callable $listener */
+            foreach ($provider->getListenersForEvent($event) as $listener) {
+                $handled = true;
+                if ($event->isPropagationStopped()) {
+                    break 2;
+                }
+                $listener($event);
             }
         }
 
-        if ($result !== null) {
-            return $result;
-        }
-
         // If no subscribers were listening to this event, try holding it
-        $this->tryHolding($event);
+        if (!$handled) {
+            $this->tryHolding($event);
+        }
+        return $event;
     }
 
     /**
