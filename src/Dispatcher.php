@@ -4,35 +4,66 @@ namespace Venue;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
+use Psr\EventDispatcher\StoppableEventInterface;
 
 /**
  * Main event dispatcher.
- *
- * @version 1.0
  */
 class Dispatcher implements EventDispatcherInterface
 {
-    /**
-     * @var array Holds any published events to which no handler has yet subscribed
-     */
+    /** @var array Holds any published events to which no handler has yet subscribed */
     public $held = [];
 
-    /**
-     * @var bool Whether we should put published events for which there are no subscribers onto the list
-     */
+    /** @var bool Whether we should put published events for which there are no subscribers onto the list */
     protected $holdingUnheardEvents = false;
 
-    /**
-     * @var ListenerProviderInterface[]
-     */
+    /** @var ListenerProviderInterface[] */
     protected $providers;
 
     /**
-     * @param ListenerProviderInterface[] $providers
+     * @param ListenerProviderInterface|ListenerProviderInterface[] $providers
      */
-    public function __construct(array $providers)
+    public function __construct(ListenerProviderInterface|array $providers)
     {
+        if (!is_array($providers)) {
+            $providers = [$providers];
+        }
+        foreach ($providers as $provider) {
+            if (!($provider instanceof ListenerProviderInterface)) {
+                throw new \InvalidArgumentException(
+                    'All listener providers must implement Psr\EventDispatcher\ListenerProviderInterface'
+                );
+            }
+        }
         $this->providers = $providers;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function dispatch(object $event)
+    {
+        $handled = false;
+        if ($event instanceof Event) {
+            $event->dispatcher($this);
+        }
+
+        foreach ($this->providers as $provider) {
+            foreach ($provider->getListenersForEvent($event) as $listener) {
+                /** @var callable $listener */
+                $handled = true;
+                if ($event instanceof StoppableEventInterface && $event->isPropagationStopped()) {
+                    break 2;
+                }
+                $listener($event);
+            }
+        }
+
+        // If no subscribers were listening to this event, try holding it
+        if (!$handled) {
+            $this->tryHolding($event);
+        }
+        return $event;
     }
 
     /**
@@ -41,7 +72,6 @@ class Dispatcher implements EventDispatcherInterface
      * @throws BadMethodCallException if validation of any handler fails
      *
      * @param array $eventHandlers Associative array of event names & handlers
-     * @return array The results of firing any held events
      *
      * @version 1.0
      */
@@ -70,44 +100,6 @@ class Dispatcher implements EventDispatcherInterface
         }
 
         return $results;
-    }
-
-    /**
-     * Let any relevant subscribers know an event needs to be handled.
-     *
-     * Note: The event object can be used to share information to other similar event handlers.
-     *
-     * @api
-     *
-     * @param Event $event An event object, usually freshly created
-     *
-     * @return mixed Result of the event
-     *
-     * @since   1.0
-     *
-     * @version 1.0
-     */
-    public function dispatch(Event $event)
-    {
-        $event->dispatcher = $this;
-        $handled = false;
-
-        foreach ($this->providers as $provider) {
-            /** @var callable $listener */
-            foreach ($provider->getListenersForEvent($event) as $listener) {
-                $handled = true;
-                if ($event->isPropagationStopped()) {
-                    break 2;
-                }
-                $listener($event);
-            }
-        }
-
-        // If no subscribers were listening to this event, try holding it
-        if (!$handled) {
-            $this->tryHolding($event);
-        }
-        return $event;
     }
 
     /**

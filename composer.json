@@ -14,7 +14,8 @@
 	],
 	"require": {
 		"php": ">=8.0",
-		"psr/event-dispatcher": "1.0.0"
+		"psr/event-dispatcher": "1.0.0",
+		"technically/callable-reflection": "^0.4.1"
 	},
 	"require-dev": {
 		"phpspec/phpspec": "^7.4",

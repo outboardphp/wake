@@ -2,6 +2,7 @@
 
 namespace Venue;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
 
 /**
@@ -14,39 +15,17 @@ use Psr\EventDispatcher\StoppableEventInterface;
  * Extend this class if you want to impose some sort of structure on the data
  * contained in your specific event type. You could validate the $data array or
  * add custom properties.
- *
- * @version 1.0
- *
- * @property mixed $previousResult "return" value from the most recent listener
  */
 class Event implements StoppableEventInterface
 {
-    /**
-     * @api
-     * @var mixed Who published this event
-     */
-    private $caller;
-
-    /**
-     * @api
-     * @var bool Indicates whether further events should be handled
-     */
+    /** @var bool Indicates whether the event should be handled by further listeners */
     private $stopPropagation = false;
 
-    /**
-     * @api
-     * @var Dispatcher|null An instance of the main Dispatcher class
-     */
+    /** @var Dispatcher|null The Dispatcher handling us */
     private $dispatcher = null;
 
-    /**
-     * @api
-     * @var array Contains the "return" values of previously-called event listeners
-     */
+    /** @var array Contains the "return" values of previously-called event listeners */
     private $previousResults = [];
-
-    /** @var array Contains the event's data */
-    private $data;
 
     /**
      * Constructor method of Event.
@@ -54,59 +33,94 @@ class Event implements StoppableEventInterface
      * All of these properties' usage details are left up to the event listener,
      * so see your event listener to know what to pass here.
      *
-     * @param array $data An array of values to be used by the event's listener (optional)
-     * @param mixed $caller The calling object or class name (optional)
-     *
-     * @version 1.0
+     * @param array $data An array of data to be used by the event's listener (optional)
+     * @param object|string|null $context The object or class name that dispatched this event (optional)
      */
-    public function __construct($data = [], $caller = null)
+    public function __construct(private array $data = [], private readonly object|string|null $context = null)
+    {}
+
+    /**
+     * Get the object or class name that dispatched this event
+     */
+    public function context(): object|string|null
     {
-        $this->data = $data;
-        $this->caller = $caller;
+        return $this->context;
     }
 
-    public function __get(string $name)
+    /**
+     * Get/set event data from an internal array
+     *
+     * @return mixed the value set or retrieved
+     */
+    public function data(int|string $key, mixed $val = null): mixed
     {
-        switch ($name) {
-            case 'previousResult':
-                return end($this->previousResults);
-            
-            case 'caller':
-            case 'stopPropagation':
-            case 'dispatcher':
-            case 'previousResults':
-                return $this->$name;
-
-            default:
-                return $this->data[$name];
+        if ($val === null) {
+            return $this->data[$key];
         }
+        $this->data[$key] = $val;
+        return $val;
     }
 
-    public function __set(string $name, $val)
+    /**
+     * Get/set the dispatcher handling this event
+     *
+     * @return Dispatcher|null|void
+     */
+    public function dispatcher(?Dispatcher $dispatcher)
     {
-        switch ($name) {
-            case 'stopPropagation':
-                $this->stopPropagation = (bool) $val;
-                break;
-
-            case 'dispatcher':
-                if ($val instanceof Observable || $val === null) {
-                    $this->dispatcher = $val;
-                }
-                break;
-
-            default:
-                $this->data[$name] = $val;
+        if ($dispatcher === null) {
+            return $this->dispatcher;
         }
+        if (isset($this->dispatcher)) {
+            throw new \LogicException('Event already connected to a dispatcher');
+        }
+        if (!($dispatcher instanceof EventDispatcherInterface)) {
+            throw new \InvalidArgumentException(
+                'Invalid dispatcher; must be an object implementing Psr\EventDispatcher\EventDispatcherInterface'
+            );
+        }
+
+        $this->dispatcher = $dispatcher;
     }
 
-    public function isPropagationStopped() : bool
+    /**
+     * @inheritDoc
+     */
+    public function isPropagationStopped(): bool
     {
         return $this->stopPropagation;
     }
 
-    public function return($val): void
+    /**
+     * Get "return" value from most recently encountered listener that did so, or set a new one
+     *
+     * @return mixed the value set or retrieved
+     */
+    public function return(mixed $val = null): mixed
     {
+        if ($val === null) {
+            return end($this->previousResults);
+        }
         $this->previousResults[] = $val;
+        return $val;
+    }
+
+    /**
+     * Get array of all values "returned" from listeners
+     */
+    public function returnAll(): array
+    {
+        return $this->previousResults;
+    }
+
+    /**
+     * Determine whether the dispatcher should continue sending this event to further listeners
+     *
+     * @return bool whether propagation was stopped
+     */
+    public function stopPropagation(bool $stop = true): bool
+    {
+        $this->stopPropagation = $stop;
+        return $stop;
     }
 }
