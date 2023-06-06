@@ -3,12 +3,12 @@
 namespace spec\Venue;
 
 use PhpSpec\ObjectBehavior;
-use Venue\Event;
+use Venue\NamedEvent;
 
-class EventSpec extends ObjectBehavior
+class NamedEventSpec extends ObjectBehavior
 {
     public function it_is_initializable()
     {
-        $this->shouldHaveType(Event::class);
+        $this->shouldHaveType(NamedEvent::class);
     }
 }

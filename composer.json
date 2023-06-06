@@ -5,16 +5,9 @@
 	"keywords": ["event","listener","hook","mediator","publish-subscribe","observer","psr-14"],
 	"homepage": "https://github.com/garrettw/venue",
 	"license": "MIT",
-	"authors": [
-		{
-			"name": "Garrett Whitehorn",
-			"homepage": "http://garrettw.net/",
-			"role": "Lead Developer"
-		}
-	],
 	"require": {
 		"php": ">=8.0",
-		"psr/event-dispatcher": "1.0.0",
+		"psr/event-dispatcher": "^1.0.0",
 		"technically/callable-reflection": "^0.4.1"
 	},
 	"require-dev": {

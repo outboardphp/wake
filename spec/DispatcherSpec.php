@@ -3,57 +3,62 @@
 namespace spec\Venue;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Psr\EventDispatcher\ListenerProviderInterface;
+use Venue\Dispatcher;
+use Venue\Event;
+use Venue\NamedEvent;
 
-class MediatorSpec extends ObjectBehavior
+class DispatcherSpec extends ObjectBehavior
 {
-    function let() {
-        $this->beConstructedWith(new \Venue\Manager);
-    }
-
-    function it_is_initializable()
+    public function let($lpi)
     {
-        $this->shouldBeAnInstanceOf('Venue\Mediator');
+        $lpi->beADoubleOf(ListenerProviderInterface::class);
+        $this->beConstructedWith($lpi);
     }
 
-    function it_will_not_hold_unheard_events_by_default()
+    public function it_is_initializable()
+    {
+        $this->shouldHaveType(Dispatcher::class);
+    }
+
+    public function it_will_not_hold_unheard_events_by_default()
     {
         $this->holdUnheardEvents()->shouldBe(false);
     }
 
-    function it_may_hold_unheard_events()
+    public function it_may_hold_unheard_events()
     {
         $this->holdUnheardEvents(true);
 
         $this->holdUnheardEvents()->shouldBe(true);
     }
 
-    function it_clears_the_pending_list()
+    public function it_clears_the_pending_list()
     {
         $this->holdUnheardEvents(true);
 
-        $this->publish(new \Venue\Event('randomname'));
+        $this->dispatch(new Event());
         $this->holdUnheardEvents(false);
 
         $this->held->shouldEqual([]);
     }
 
-    function it_holds_the_pending_event()
+    public function it_holds_the_pending_event()
     {
         $this->holdUnheardEvents(true);
 
-        $this->publish(new \Venue\Event('randomname'));
+        $this->dispatch(new NamedEvent('randomname'));
 
-        $this->held[0]->shouldBeAnInstanceOf('Venue\Event');
+        $this->held[0]->shouldBeAnInstanceOf('Venue\NamedEvent');
         $this->held[0]->name->shouldEqual('randomname');
     }
 
-    function it_has_no_subscribers()
+    public function it_has_no_subscribers()
     {
         $this->shouldNotHaveSubscribers('randomname');
     }
 
-    function it_can_register_basic_handlers()
+    public function it_can_register_basic_handlers()
     {
         $eventname = 'randomname';
         $callback = function() {};
@@ -64,7 +69,7 @@ class MediatorSpec extends ObjectBehavior
         $this->isSubscribed($eventname, $callback)->shouldBeInteger();
     }
 
-    function it_can_register_time_handlers()
+    public function it_can_register_time_handlers()
     {
         $eventname = 'timer';
         $callback = function() {};
@@ -75,7 +80,7 @@ class MediatorSpec extends ObjectBehavior
         $this->isSubscribed($eventname, $callback)->shouldBeInteger();
     }
 
-    function it_can_unregister_all_handlers()
+    public function it_can_unregister_all_handlers()
     {
         $eventname = 'randomname';
         $callback = function() {};
@@ -87,7 +92,7 @@ class MediatorSpec extends ObjectBehavior
         $this->shouldNotHaveSubscribers($eventname);
     }
 
-    function it_can_unregister_specific_handlers()
+    public function it_can_unregister_specific_handlers()
     {
         $eventname = 'randomname';
         $callback1 = function() { return true; };
@@ -101,21 +106,21 @@ class MediatorSpec extends ObjectBehavior
         $this->isSubscribed($eventname, $callback1)->shouldReturn(false);
     }
 
-    function it_can_publish_events()
+    public function it_can_publish_events()
     {
         $eventname = 'randomname';
         $callback = function() { return 'event handled'; };
         $this->subscribe([$eventname => [$callback]]);
 
-        $this->publish(new \Venue\Event($eventname))->shouldReturn('event handled');
+        $this->publish(new NamedEvent($eventname))->shouldReturn('event handled');
     }
 
-    function it_can_handle_timed_events()
+    public function it_can_handle_timed_events()
     {
         $eventname = 'timer';
         $callback = function() { return 'timed event handled'; };
         $this->subscribe([$eventname . ':100' => [$callback]]);
-        $timer = new \Venue\Event('timer');
+        $timer = new Event('timer');
 
         while (($result = $this->getWrappedObject()->publish($timer)) === null) {}
 
