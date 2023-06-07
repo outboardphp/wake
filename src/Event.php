@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Venue;
 
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
 
 /**
@@ -21,9 +22,6 @@ class Event implements StoppableEventInterface
     /** @var bool Indicates whether the event should be handled by further listeners */
     private $stopPropagation = false;
 
-    /** @var Dispatcher|null The Dispatcher handling us */
-    private $dispatcher = null;
-
     /** @var array Contains the "return" values of previously-called event listeners */
     private $previousResults = [];
 
@@ -37,7 +35,8 @@ class Event implements StoppableEventInterface
      * @param object|string|null $context The object or class name that dispatched this event (optional)
      */
     public function __construct(private array $data = [], private readonly object|string|null $context = null)
-    {}
+    {
+    }
 
     /**
      * Get the object or class name that dispatched this event
@@ -59,28 +58,6 @@ class Event implements StoppableEventInterface
         }
         $this->data[$key] = $val;
         return $val;
-    }
-
-    /**
-     * Get/set the dispatcher handling this event
-     *
-     * @return Dispatcher|null|void
-     */
-    public function dispatcher(?Dispatcher $dispatcher)
-    {
-        if ($dispatcher === null) {
-            return $this->dispatcher;
-        }
-        if (isset($this->dispatcher)) {
-            throw new \LogicException('Event already connected to a dispatcher');
-        }
-        if (!($dispatcher instanceof EventDispatcherInterface)) {
-            throw new \InvalidArgumentException(
-                'Invalid dispatcher; must be an object implementing Psr\EventDispatcher\EventDispatcherInterface'
-            );
-        }
-
-        $this->dispatcher = $dispatcher;
     }
 
     /**
