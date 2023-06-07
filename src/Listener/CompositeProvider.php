@@ -34,4 +34,10 @@ class CompositeProvider implements ListenerProviderInterface
     {
         return $this->providers;
     }
+
+    public function attach(ListenerProviderInterface $provider): static
+    {
+        $this->providers[] = $provider;
+        return $this;
+    }
 }
