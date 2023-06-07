@@ -88,11 +88,12 @@ class Collection
             if (empty($this->listeners[$eventName])) {
                 $this->detachAll($eventName);
             }
+            return;
         }
 
         // Detach from all event class names
         foreach ($this->getCallableParamTypes($listener) as $paramType) {
-            $key = array_search($listener, $this->listeners[$paramType]);
+            $key = array_search($listener, $this->listeners[$paramType]); // todo: check param 2 for existence
             if ($key !== false) {
                 unset($this->listeners[$paramType][$key]);
                 // If there are no more listeners, remove the event

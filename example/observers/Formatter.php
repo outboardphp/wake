@@ -1,60 +1,62 @@
 <?php
 
-use Venue\Event;
+use Venue\Dispatcher;
+use Venue\NamedEvent;
+use Venue\Listener\Collection;
 
 /**
- * A default Venue Observer
+ * A default Venue Listener
  *
- * This is the default Venue Observer, which other plugins/listeners
- * will override its functionality
- *
- * @author      Garrett Whitehorn
- * @package     Venue
- * @subpackage  VenueExample
- * @version     1.0
+ * This is the default Venue Listener; other plugins/listeners
+ * will override its functionality.
  */
-class Formatter extends Venue\Observer
+class Formatter
 {
-    public function subscribe() {
-        // This is just here for an example of explicitly-defined handlers
-        $this->handlers = [
-            'formatUsername' => [[$this, 'formatUsername']],
-            'formatGroup'    => [[$this, 'formatGroup']],
-            'formatDate'     => [[$this, 'formatDate']],
-            'formatMessage'  => [[$this, 'formatMessage']],
-        ];
-
-        return parent::subscribe();
+    public function __construct(private Dispatcher $dispatcher)
+    {
     }
 
-    public function formatUsername(Event $event) {
-        return $event->data;
+    public function listeners(Collection $collection)
+    {
+        return $collection
+            ->add([$this, 'formatUsername'], 'formatUsername')
+            ->add([$this, 'formatGroup'], 'formatGroup')
+            ->add([$this, 'formatDate'], 'formatDate')
+            ->add([$this, 'formatMessage'], 'formatMessage')
+            ->add([$this, 'onCreatePost'], 'createPost');
     }
 
-    public function formatGroup(Event $event) {
-        return $event->data;
+    public function formatUsername(NamedEvent $event)
+    {
+        $event->return($event->data(0));
     }
 
-    public function formatMessage(Event $event) {
-        return nl2br($event->data);
+    public function formatGroup(NamedEvent $event)
+    {
+        $event->return($event->data(0));
     }
 
-    public function formatDate(Event $event) {
-        // return date('F j, Y h:i:s A', $event->data);
-        return '';
+    public function formatMessage(NamedEvent $event)
+    {
+        $event->return(nl2br($event->data(0)));
     }
 
-    public function onCreatePost(Event $event) {
-        $result = '<div style="padding: 9px 16px;border:1px solid #EEE;margin-bottom:16px;">'
-                 .'<strong>Posted by</strong> '
-                 .$this->mediator->publish(new Event('formatUsername', $event->data['username'], $this))
-                 .' ('
-                 .$this->mediator->publish(new Event('formatGroup', $event->data['group'], $this))
-                 .')<br /><strong>Posted Date</strong> '
-                 .$this->mediator->publish(new Event('formatDate', $event->data['date'], $this))
-                 .'<br />'
-                 .$this->mediator->publish(new Event('formatMessage', $event->data['message'], $this))
-                 .'</div>';
-        return $result;
+    public function formatDate(NamedEvent $event)
+    {
+        $event->return($event->data(0));
+    }
+
+    public function onCreatePost(NamedEvent $event)
+    {
+        $event->return('<div style="padding: 9px 16px;border:1px solid #EEE;margin-bottom:16px;">'
+             . '<strong>Posted by</strong> '
+             . $this->dispatcher->dispatch(new NamedEvent('formatUsername', [$event->data('username')], $this))->return()
+             . ' ('
+             . $this->dispatcher->dispatch(new NamedEvent('formatGroup', [$event->data('group')], $this))->return()
+             . ')<br /><strong>Posted Date</strong> '
+             . $this->dispatcher->dispatch(new NamedEvent('formatDate', [$event->data('date')], $this))->return()
+             . '<br />'
+             . $this->dispatcher->dispatch(new NamedEvent('formatMessage', [$event->data('message')], $this))->return()
+             . '</div>');
     }
 }

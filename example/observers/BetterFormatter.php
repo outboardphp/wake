@@ -1,23 +1,27 @@
 <?php
 
-use Venue\Event;
+use Venue\NamedEvent;
+use Venue\Listener\Collection;
 
 /**
- * An example Venue Observer
+ * An example Venue Listener
  *
- * This is an example Observer/plugin, which will override
- * previously called Observers. This example Observer enhances
- * the group and date formatting
- *
- * @author      Garrett Whitehorn
- * @package     Venue
- * @subpackage  VenueExample
- * @version     1.0
+ * This is an example Listener/plugin, which will override
+ * previously called Listeners. This example Listener enhances
+ * the group and date formatting.
  */
-class BetterFormatter extends Venue\Observer
+class BetterFormatter
 {
-    public function onFormatGroup(Event $event) {
-        $groupName = strtolower($event->data);
+    public function listeners(Collection $collection)
+    {
+        return $collection
+            ->add([$this, 'onFormatGroup'], 'formatGroup')
+            ->add([$this, 'onFormatDate'], 'formatDate');
+    }
+
+    public function onFormatGroup(NamedEvent $event)
+    {
+        $groupName = strtolower($event->data(0));
 
         switch ($groupName):
             case 'admin':
@@ -31,10 +35,11 @@ class BetterFormatter extends Venue\Observer
                 break;
         endswitch;
 
-        return $groupName;
+        $event->return($groupName);
     }
 
-    public function onFormatDate(Event $event) {
-        return date('F j, Y h:i:s A T', $event->data);
+    public function onFormatDate(NamedEvent $event)
+    {
+        $event->return(date('F j, Y h:i:s A T', $event->data(0)));
     }
 }
