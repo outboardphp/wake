@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Venue\Listener;
 
 use Technically\CallableReflection\CallableReflection;
+use Technically\CallableReflection\Parameters\TypeReflection;
 
 class Collection
 {
@@ -16,44 +17,47 @@ class Collection
     }
 
     /**
-     * Get listeners for event class names specified.
+     * Get listeners for event names specified.
      *
-     * @param string ...$eventClassNames Event class names.
-     *
-     * @return iterable<callable> Listeners.
+     * @param string ...$eventNames event class names
+     * @return iterable<callable> listeners
      */
-    public function getForEvents(string ...$eventClassNames): iterable
+    public function getForEvents(string ...$eventNames): iterable
     {
-        foreach ($eventClassNames as $eventClassName) {
-            if (isset($this->listeners[$eventClassName])) {
-                yield from $this->listeners[$eventClassName];
+        foreach ($eventNames as $eventName) {
+            if (isset($this->listeners[$eventName])) {
+                yield from $this->listeners[$eventName];
             }
         }
     }
 
-
     /**
-     * Attaches a new listener to an event.
+     * Adds a new listener along with the event(s) it listens for.
      *
      * @param callable $listener Must accept one typehinted parameter: an event object
-     * @param string $eventName The event it will listen for, if different from the parameter's typehint
+     * @param string|array $eventName The event(s) it will listen for, if different from the parameter's typehint
      * @throws InvalidArgumentException if listener validation fails
      */
-    public function attach(callable $listener, string $eventName = ''): static
+    public function add(callable $listener, string|array $events = ''): static
     {
-        if ($eventName) {
-            $this->listeners[$eventName][] = $listener;
+        if (!empty($events)) {
+            if (is_string($events)) {
+                $events = [$events];
+            }
+            foreach ($events as $eventName) {
+                $this->listeners[$eventName][] = $listener;
+            }
             return $this;
         }
         
-        $foundOne = false;
-        $this->getCallableParamTypesAndDo($listener, function ($paramType) use ($listener, $foundOne) {
+        $matched = false;
+        foreach ($this->getCallableParamTypes($listener) as $paramType) {
             $this->listeners[$paramType][] = $listener;
-            $foundOne = true;
-        });
-        if (!$foundOne) {
+            $matched = true;
+        }
+        if (!$matched) {
             throw new \InvalidArgumentException(
-                'Listener callable must define one typehinted parameter to accept an event object'
+                'Listener callable must define one typehinted parameter that accepts an event object'
             );
         }
 
@@ -61,7 +65,7 @@ class Collection
     }
 
     /**
-     * Remove all listeners from a certain event name.
+     * Remove all listeners for a certain event name.
      */
     public function detachAll(string $eventName): void
     {
@@ -72,11 +76,11 @@ class Collection
      * Detaches a listener from an event.
      *
      * @param callable $listener The exact listener that was originally attached
-     * @param string $eventName The event it is listening for
+     * @param string $eventName The event it is listening for, if different from the parameter's typehint
      */
-    public function detach(callable $listener, string $eventName)
+    public function detach(callable $listener, string $eventName = '')
     {
-        // Search by manual event name
+        // Detach from manual event name
         $key = array_search($listener, $this->listeners[$eventName]);
         if ($key !== false) {
             unset($this->listeners[$eventName][$key]);
@@ -86,8 +90,8 @@ class Collection
             }
         }
 
-        // Search by event classname
-        $this->getCallableParamTypesAndDo($listener, function ($paramType) use ($listener) {
+        // Detach from all event class names
+        foreach ($this->getCallableParamTypes($listener) as $paramType) {
             $key = array_search($listener, $this->listeners[$paramType]);
             if ($key !== false) {
                 unset($this->listeners[$paramType][$key]);
@@ -96,17 +100,20 @@ class Collection
                     $this->detachAll($paramType);
                 }
             }
-        });
+        }
     }
 
-    protected function getCallableParamTypesAndDo(callable $inspect, callable $execute)
+    protected function getCallableParamTypes(callable $inspect): iterable
     {
         $reflection = CallableReflection::fromCallable($inspect);
         [$param] = $reflection->getParameters();
         foreach ($param->getTypes() as $paramType) {
             /** @var TypeReflection $paramType */
-            if ($paramType->isClassName()) {
-                $execute($paramType->getType());
+            if ($paramType->isObject()) {
+                yield $paramType->getType();
+            }
+            if ($paramType->isClassRequirement()) {
+                yield $paramType->getClassRequirement();
             }
         }
     }
