@@ -1,37 +1,37 @@
 // https://aka.ms/devcontainer.json
 {
-    "name": "Existing Docker Compose (Extend)",
-    "dockerComposeFile": [
-        "../docker-compose.yml"
-    ],
-    "service": "venue",
-    "workspaceFolder": "/var/www/html",
+    "name": "PHP 8.2",
+    "image": "mcr.microsoft.com/devcontainers/php:1-8.2-bullseye",
     "customizations": {
         "vscode": {
             "extensions": [
+                "ikappas.composer",
+                "neilbrayfield.php-docblocker",
+                "mehedidracula.php-namespace-resolver",
+                "github.vscode-github-actions",
+                "-xdebug.php-debug",
                 "formulahendry.auto-complete-tag",
                 "alefragnani.bookmarks",
-                "predrag-nikolic.php-class-helper",
-                "ikappas.composer",
-                "eamodio.gitlens",
                 "nhoizey.gremlins",
                 "oderwat.indent-rainbow",
-                "jakebathman.mysql-syntax",
-                "xdebug.php-pack",
-                "neilbrayfield.php-docblocker",
                 "bmewburn.vscode-intelephense-client",
-                "mehedidracula.php-namespace-resolver",
                 "pflannery.vscode-versionlens",
-                "redhat.vscode-yaml",
-                "GitHub.vscode-pull-request-github",
-                "sonarsource.sonarlint-vscode",
-                "github.vscode-github-actions"
+                "sonarsource.sonarlint-vscode"
             ],
             "settings": {}
         }
-    }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/opencodeco/devcontainers/install-php-extensions:0": {
+            "extensions": ""
+        }
+    },
     // "remoteUser": "www-data"
-    // "postCreateCommand": "chown -R 1000:1000 /var/www/html",
+    "postCreateCommand": "sudo chmod a+x \"$(pwd)\" && sudo rm -rf /var/www/html && sudo ln -s \"$(pwd)\" /var/www/html; if [ -f composer.json ];then composer install;fi"
     // "forwardPorts": [],
     // "runServices": [],
     // "shutdownAction": "none",
