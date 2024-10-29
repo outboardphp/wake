@@ -1,9 +1,7 @@
 Check out other libs
 - https://github.com/phoole/event
-- https://github.com/phossa2/event
 - https://github.com/pleets/php-event-dispatcher
 - https://github.com/yiisoft/event-dispatcher
-- https://github.com/mix-php/event
 - https://github.com/Superbalist/php-pubsub
 
 Concerns:
@@ -21,5 +19,4 @@ Concerns:
 
 Also see:
 - https://github.com/php-fig/event-dispatcher-util
-   - https://github.com/php-fig/event-dispatcher-util/blob/master/src/ParameterDeriverTrait.php
 - https://hive.blog/php/@crell/psr-14-being-a-good-provider

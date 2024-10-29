@@ -2,57 +2,48 @@
 
 declare(strict_types=1);
 
-namespace Venue\Listener;
+namespace Venue;
 
 use Technically\CallableReflection\CallableReflection;
 use Technically\CallableReflection\Parameters\TypeReflection;
 
-class Collection
+class TaggedListenerCollection
 {
     /**
-     * @param array $listeners Takes the form of: ['eventName' => [callable, ...], ...]
+     * @param array $listeners Takes the form of: ['tagName' => ['eventName' => [callable, ...], ...], ...]
      */
     public function __construct(private array $listeners = [])
     {
     }
 
-    /**
-     * Get listeners for event names specified.
-     *
-     * @param string ...$eventNames event class names
-     * @return iterable<callable> listeners
-     */
-    public function getForEvents(string ...$eventNames): iterable
+    public function getListenersForTag(string $tag): iterable
     {
-        foreach ($eventNames as $eventName) {
-            if (isset($this->listeners[$eventName])) {
-                yield from $this->listeners[$eventName];
-            }
-        }
+        return $this->listeners[$tag] ?? [];
     }
 
     /**
-     * Adds a new listener along with the event(s) it listens for.
+     * Adds a new listener to a given tag along with the event(s) it listens for.
      *
+     * @param string $tag
      * @param callable $listener Must accept one typehinted parameter: an event object
-     * @param string|array $eventName The event(s) it will listen for, if different from the parameter's typehint
+     * @param string|array $events The event(s) it will listen for, if different from the parameter's typehint
      * @throws InvalidArgumentException if listener validation fails
      */
-    public function add(callable $listener, string|array $events = ''): static
+    public function add(string $tag, callable $listener, string|array $events = ''): static
     {
         if (!empty($events)) {
             if (is_string($events)) {
                 $events = [$events];
             }
             foreach ($events as $eventName) {
-                $this->listeners[$eventName][] = $listener;
+                $this->listeners[$tag][$eventName][] = $listener;
             }
             return $this;
         }
         
         $matched = false;
         foreach ($this->getCallableParamTypes($listener) as $paramType) {
-            $this->listeners[$paramType][] = $listener;
+            $this->listeners[$tag][$paramType][] = $listener;
             $matched = true;
         }
         if (!$matched) {
@@ -65,40 +56,45 @@ class Collection
     }
 
     /**
-     * Remove all listeners for a certain event name.
+     * Remove all listeners for a certain tag and/or event name.
      */
-    public function detachAll(string $eventName): void
+    public function detachAll(string $tag, string $eventName = ''): void
     {
-        unset($this->listeners[$eventName]);
+        if (empty($eventName)) {
+            unset($this->listeners[$tag]);
+        } else {
+            unset($this->listeners[$tag][$eventName]);
+        }
     }
 
     /**
      * Detaches a listener from an event.
      *
+     * @param string $tag
      * @param callable $listener The exact listener that was originally attached
      * @param string $eventName The event it is listening for, if different from the parameter's typehint
      */
-    public function detach(callable $listener, string $eventName = '')
+    public function detach(string $tag, callable $listener, string $eventName = '')
     {
         // Detach from manual event name
-        $key = array_search($listener, $this->listeners[$eventName]);
+        $key = array_search($listener, $this->listeners[$tag][$eventName]);
         if ($key !== false) {
-            unset($this->listeners[$eventName][$key]);
+            unset($this->listeners[$tag][$eventName][$key]);
             // If there are no more listeners, remove the event
-            if (empty($this->listeners[$eventName])) {
-                $this->detachAll($eventName);
+            if (empty($this->listeners[$tag][$eventName])) {
+                $this->detachAll($tag, $eventName);
             }
             return;
         }
 
         // Detach from all event class names
         foreach ($this->getCallableParamTypes($listener) as $paramType) {
-            $key = array_search($listener, $this->listeners[$paramType]); // todo: check param 2 for existence
+            $key = array_search($listener, $this->listeners[$tag][$paramType]); // todo: check param 2 for existence
             if ($key !== false) {
-                unset($this->listeners[$paramType][$key]);
+                unset($this->listeners[$tag][$paramType][$key]);
                 // If there are no more listeners, remove the event
-                if (empty($this->listeners[$paramType])) {
-                    $this->detachAll($paramType);
+                if (empty($this->listeners[$tag][$paramType])) {
+                    $this->detachAll($tag, $paramType);
                 }
             }
         }

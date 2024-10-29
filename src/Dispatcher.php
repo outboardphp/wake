@@ -7,17 +7,16 @@ namespace Venue;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
+use Venue\Contracts\Hook;
 
 /**
- * Dispatches events to all applicable listeners.
+ * Dispatches events to applicable listeners via the registered provider.
  *
  * @see https://www.php-fig.org/psr/psr-14/
  */
 class Dispatcher implements EventDispatcherInterface
 {
-    public function __construct(protected ListenerProviderInterface $provider)
-    {
-    }
+    public function __construct(public readonly ListenerProviderInterface $provider) {}
 
     /**
      * @inheritDoc
@@ -30,6 +29,10 @@ class Dispatcher implements EventDispatcherInterface
                 break;
             }
             try {
+                if ($event instanceof Hook) {
+                    $event->addResult($listener($event));
+                    continue;
+                }
                 $listener($event);
             } catch (\Throwable $e) {
                 // only dispatch a Throwable the first time around
@@ -42,10 +45,5 @@ class Dispatcher implements EventDispatcherInterface
         }
 
         return $event;
-    }
-
-    public function getProvider(): ListenerProviderInterface
-    {
-        return $this->provider;
     }
 }
