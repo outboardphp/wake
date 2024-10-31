@@ -10,7 +10,7 @@ use Technically\CallableReflection\Parameters\TypeReflection;
 class ListenerCollection
 {
     /**
-     * @param array $listeners Takes the form of: ['eventName' => [callable, ...], ...]
+     * @param array $listeners Takes the form of: ['EventClass' => [callable, ...], ...]
      */
     public function __construct(private array $listeners = []) {}
 
@@ -20,7 +20,7 @@ class ListenerCollection
      * @param string ...$eventNames event class names
      * @return iterable<callable> listeners
      */
-    public function getForEvents(string ...$eventNames): iterable
+    public function getListenersForEvents(string ...$eventNames): iterable
     {
         foreach ($eventNames as $eventName) {
             if (isset($this->listeners[$eventName])) {
@@ -30,24 +30,13 @@ class ListenerCollection
     }
 
     /**
-     * Adds a new listener along with the event(s) it listens for.
+     * Adds a new listener to the collection.
      *
      * @param callable $listener Must accept one typehinted parameter: an event object
-     * @param string|array $eventName The event(s) it will listen for, if different from the parameter's typehint
      * @throws InvalidArgumentException if listener validation fails
      */
-    public function add(callable $listener, string|array $events = ''): static
+    public function add(callable $listener): static
     {
-        if (!empty($events)) {
-            if (is_string($events)) {
-                $events = [$events];
-            }
-            foreach ($events as $eventName) {
-                $this->listeners[$eventName][] = $listener;
-            }
-            return $this;
-        }
-        
         $matched = false;
         foreach ($this->getCallableParamTypes($listener) as $paramType) {
             $this->listeners[$paramType][] = $listener;

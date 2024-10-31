@@ -9,14 +9,17 @@ Concerns:
 - should the event manage pipeline return values?
 - should the hub provide more mechanisms for error tracking and debugging?
 - sync/async event processing (drivers; rabbitmq, kafka, sqs, activemq,)
-- laravel (queues?) https://laravel.com/docs/5.8/events
+- laravel (queues?) https://laravel.com/docs/11.x/events
 - symfony (messenger?) https://symfony.com/doc/current/event_dispatcher.html
 - https://docs.zendframework.com/zend-eventmanager/
 - https://event.thephpleague.com/
 - https://github.com/crell/tukio
 - https://github.com/phly/phly-event-dispatcher
+   - https://packagist.org/packages/phpactor/phly-event-dispatcher
 - https://github.com/bmack/kart-composer-plugin
+- https://github.com/circli/event-dispatcher
+- https://github.com/bytic/event-dispatcher
+- https://github.com/rbergDrox/pinoven-event-dispatcher
 
 Also see:
-- https://github.com/php-fig/event-dispatcher-util
 - https://hive.blog/php/@crell/psr-14-being-a-good-provider

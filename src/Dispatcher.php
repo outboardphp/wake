@@ -18,9 +18,6 @@ class Dispatcher implements EventDispatcherInterface
 {
     public function __construct(public readonly ListenerProviderInterface $provider) {}
 
-    /**
-     * @inheritDoc
-     */
     public function dispatch(object $event): object
     {
         foreach ($this->provider->getListenersForEvent($event) as $listener) {

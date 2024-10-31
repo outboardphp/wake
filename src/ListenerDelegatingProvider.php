@@ -14,4 +14,4 @@ namespace Venue;
  * need it. Plus, depending on this class means you'll get any updates I make
  * if I decide to change how something is handled.
  */
-class ListenerAggregateProvider extends \Fig\EventDispatcher\AggregateProvider {}
+class ListenerDelegatingProvider extends \Fig\EventDispatcher\DelegatingProvider {}

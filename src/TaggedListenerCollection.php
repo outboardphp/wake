@@ -10,7 +10,7 @@ use Technically\CallableReflection\Parameters\TypeReflection;
 class TaggedListenerCollection
 {
     /**
-     * @param array $listeners Takes the form of: ['tagName' => ['eventName' => [callable, ...], ...], ...]
+     * @param array $listeners Takes the form of: ['tagName' => ['EventClass' => [callable, ...], ...], ...]
      */
     public function __construct(private array $listeners = [])
     {
@@ -40,7 +40,7 @@ class TaggedListenerCollection
             }
             return $this;
         }
-        
+
         $matched = false;
         foreach ($this->getCallableParamTypes($listener) as $paramType) {
             $this->listeners[$tag][$paramType][] = $listener;

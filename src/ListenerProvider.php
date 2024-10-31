@@ -15,14 +15,11 @@ class ListenerProvider implements ListenerProviderInterface
 {
     public function __construct(public readonly ListenerCollection $listeners) {}
 
-    /**
-     * @inheritDoc
-     */
     public function getListenersForEvent(object $event): iterable
     {
         // now find all listeners accepting objects that match this event class
-        yield from $this->listeners->getForEvents($event::class);
-        yield from $this->listeners->getForEvents(...array_values(class_parents($event)));
-        yield from $this->listeners->getForEvents(...array_values(class_implements($event)));
+        yield from $this->listeners->getListenersForEvents($event::class);
+        yield from $this->listeners->getListenersForEvents(...array_values(class_parents($event)));
+        yield from $this->listeners->getListenersForEvents(...array_values(class_implements($event)));
     }
 }
