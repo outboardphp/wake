@@ -8,7 +8,9 @@ other variations on listener providers to meet special needs.
 Currently in the middle of a major refactoring so documentation and tests are incomplete.
 
 ## Install
-`composer require garrettw/venue`
+```bash
+composer require garrettw/venue
+```
 
 ## Basic Usage
 ```php
@@ -46,7 +48,7 @@ $dispatcher->dispatch($event);
 
 ## Creating Your Own Event Classes
 Venue provides a few interfaces and traits you may want to use when writing
-event classes:
+event classes.
 
 ### Stopping Event Propagation
 The most basic mechanism to allow an event to stop propagating to other listeners
@@ -55,8 +57,8 @@ consists of a single method:
 ```php
 public function isPropagationStopped(): bool;
 ```
-You can implement that method yourself with any logic you want, or alternatively
-you can just include this line in your class:
+You can then implement that method yourself with any logic you want, or you can
+include this line in your class:
 ```php
     use \Venue\Traits\CanStopPropagation;
 ```
@@ -73,12 +75,12 @@ following trait:
 This adds a method called `stopPropagation()` to your event class.
 
 ### Direction of Data Flow
-With Venue, events largely represent unidirectional data flow; an event is
-fired, and listeners receive it. The intent is for events to be immutable, but
-since they can be any object and thus contain arbitrary behavior, they are not
-guaranteed to be immutable as far as this library is aware.
+Events largely represent unidirectional data flow; an event is fired, and
+listeners receive it. But since events can be any object and thus contain
+arbitrary behavior, this library does not make any assumptions about how
+events behave.
 
-In order to account for both unidirectional and bidirectional-flow use cases,
+In order to better support the use case of bidirectional data flow,
 Venue includes a specific interface/trait combination to help you build
 bidirectional event classes, which we call Hooks.
 - Interface: `Venue\Contracts\Hook`
