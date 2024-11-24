@@ -54,7 +54,7 @@ class ListenerCollection
     /**
      * Remove all listeners for a certain event name.
      */
-    public function detachAll(string $eventName): void
+    public function removeAllForEvent(string $eventName): void
     {
         unset($this->listeners[$eventName]);
     }
@@ -65,7 +65,7 @@ class ListenerCollection
      * @param callable $listener The exact listener that was originally attached
      * @param string $eventName The event it is listening for, if different from the parameter's typehint
      */
-    public function detach(callable $listener, string $eventName = '')
+    public function remove(callable $listener, string $eventName = '')
     {
         // Detach from manual event name
         $key = array_search($listener, $this->listeners[$eventName]);
@@ -73,20 +73,23 @@ class ListenerCollection
             unset($this->listeners[$eventName][$key]);
             // If there are no more listeners, remove the event
             if (empty($this->listeners[$eventName])) {
-                $this->detachAll($eventName);
+                $this->removeAllForEvent($eventName);
             }
             return;
         }
 
         // Detach from all event class names
         foreach ($this->getCallableParamTypes($listener) as $paramType) {
-            $key = array_search($listener, $this->listeners[$paramType]); // todo: check param 2 for existence
-            if ($key !== false) {
+            if (
+                !empty($this->listeners[$paramType])
+                && ($key = array_search($listener, $this->listeners[$paramType])) !== false
+            ) {
                 unset($this->listeners[$paramType][$key]);
-                // If there are no more listeners, remove the event
-                if (empty($this->listeners[$paramType])) {
-                    $this->detachAll($paramType);
-                }
+            }
+
+            // If there are no more listeners, remove the event
+            if (empty($this->listeners[$paramType])) {
+                unset($this->listeners[$paramType]);
             }
         }
     }

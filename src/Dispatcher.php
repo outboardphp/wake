@@ -32,8 +32,9 @@ class Dispatcher implements EventDispatcherInterface
                 }
                 $listener($event);
             } catch (\Throwable $e) {
-                // only dispatch a Throwable the first time around
-                // otherwise it could result in an endless loop
+                // only dispatch a Throwable the first time around -
+                // otherwise it could result in an endless loop in the
+                // case where a throwable listener throws an exception
                 if (!($event instanceof \Throwable)) {
                     $this->dispatch($e);
                 }

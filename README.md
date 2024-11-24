@@ -1,11 +1,36 @@
-Venue
-======
+# Venue
 
-Venue is a full-featured, [PSR-14](http://www.php-fig.org/psr/psr-14/) compliant event library for PHP, combining the Mediator and Observer patterns.
+Venue is a full-featured, [PSR-14](http://www.php-fig.org/psr/psr-14/)-compliant event library for PHP, combining the Mediator and Observer patterns.
 It includes an event dispatcher and a basic listener provider, as per the spec, and adds listener collections and
 other variations on listener providers to meet special needs.
 
 Currently in the middle of a major refactoring so documentation and tests are incomplete.
+
+### Inspired by
+- https://github.com/DavidRockin/Podiya
+- https://github.com/yiisoft/event-dispatcher
+
+### Planned features
+- Event/listener ordering
+- Consider dispatcher mechanism for error tracking/debugging
+- Support async event processing via ListenerProviders that interface with MQs/DBs
+
+### Future inspiration to be taken from:
+- https://symfony.com/doc/current/event_dispatcher.html (messenger?)
+- https://laravel.com/docs/11.x/events (queues?)
+- https://docs.laminas.dev/laminas-eventmanager/
+- https://event.thephpleague.com/
+- https://github.com/crell/tukio
+   - https://hive.blog/php/@crell/psr-14-being-a-good-provider
+- https://github.com/phoole/event
+- https://github.com/pleets/php-event-dispatcher
+- https://github.com/Superbalist/php-pubsub
+- https://github.com/phly/phly-event-dispatcher
+   - https://packagist.org/packages/phpactor/phly-event-dispatcher
+- https://github.com/circli/event-dispatcher
+- https://github.com/bytic/event-dispatcher
+- https://github.com/rbergDrox/pinoven-event-dispatcher
+- https://github.com/bmack/kart-composer-plugin
 
 ## Install
 ```bash
@@ -46,7 +71,7 @@ $event->data = 'some string';
 $dispatcher->dispatch($event);
 ```
 
-## Creating Your Own Event Classes
+## Creating Event Classes
 Venue provides a few interfaces and traits you may want to use when writing
 event classes.
 

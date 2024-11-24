@@ -1,8 +1,8 @@
 {
 	"name": "garrettw/venue",
 	"type": "library",
-	"description": "PHP event library following PSR-14 and the Mediator/Observer behavioral patterns",
-	"keywords": ["event","listener","hook","mediator","publish-subscribe","observer","psr-14"],
+	"description": "PHP event-dispatcher library following PSR-14 and the Mediator/Observer patterns",
+	"keywords": ["event","listener","dispatcher","hook","mediator","publish-subscribe","observer","psr-14"],
 	"homepage": "https://github.com/garrettw/venue",
 	"license": "MIT",
 	"require": {

@@ -16,4 +16,3 @@ trim_trailing_whitespace = false
 
 [**/*.{yml,yaml,yml.dist}]
 indent_size = 2
-3
