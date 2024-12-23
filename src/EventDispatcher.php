@@ -23,8 +23,19 @@ class EventDispatcher implements EventDispatcherInterface
         return $this->dispatch($event);
     }
 
-    public function dispatch(object $event): object
+    /**
+     * @param object|object[] $event
+     * @return object|object[]
+     */
+    public function dispatch(object|array $event): object|array
     {
+        if (is_array($event)) {
+            foreach ($event as $subevent) {
+                $this->dispatch($subevent);
+            }
+            return $event;
+        }
+
         foreach ($this->provider->getListenersForEvent($event) as $listener) {
             /** @var callable $listener */
             if ($event instanceof StoppableEventInterface && $event->isPropagationStopped()) {
