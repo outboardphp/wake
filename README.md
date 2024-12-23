@@ -9,28 +9,20 @@ Currently in the middle of a major refactoring so documentation and tests are in
 ### Inspired by
 - https://github.com/DavidRockin/Podiya
 - https://github.com/yiisoft/event-dispatcher
+- https://event.thephpleague.com/
 
 ### Planned features
-- Event/listener ordering
+- Event/listener ordering (priority, before/after)
 - Consider dispatcher mechanism for error tracking/debugging
 - Support async event processing via ListenerProviders that interface with MQs/DBs
 
 ### Future inspiration to be taken from:
-- https://symfony.com/doc/current/event_dispatcher.html (messenger?)
 - https://laravel.com/docs/11.x/events (queues?)
-- https://docs.laminas.dev/laminas-eventmanager/
-- https://event.thephpleague.com/
 - https://github.com/crell/tukio
    - https://hive.blog/php/@crell/psr-14-being-a-good-provider
-- https://github.com/phoole/event
-- https://github.com/pleets/php-event-dispatcher
-- https://github.com/Superbalist/php-pubsub
-- https://github.com/phly/phly-event-dispatcher
-   - https://packagist.org/packages/phpactor/phly-event-dispatcher
-- https://github.com/circli/event-dispatcher
-- https://github.com/bytic/event-dispatcher
-- https://github.com/rbergDrox/pinoven-event-dispatcher
-- https://github.com/bmack/kart-composer-plugin
+- https://github.com/pleets/php-event-dispatcher (if serialization is needed)
+- https://github.com/Superbalist/php-pubsub (drivers/adapters)
+- https://github.com/phly/phly-event-dispatcher (MWOP)
 
 ## Install
 ```bash
