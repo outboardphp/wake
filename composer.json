@@ -7,9 +7,10 @@
 	"license": "MIT",
 	"require": {
 		"php": ">=8.1",
+		"psr/container": "^2.0",
 		"psr/event-dispatcher": "^1.0.0",
-		"technically/callable-reflection": "^0.4.1",
-		"fig/event-dispatcher-util": "dev-master"
+		"fig/event-dispatcher-util": "dev-master",
+		"technically/callable-reflection": "^0.4.1"
 	},
 	"require-dev": {
 		"phpspec/phpspec": "^7.4",

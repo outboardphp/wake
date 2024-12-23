@@ -4,9 +4,16 @@ declare(strict_types=1);
 
 namespace Venue;
 
+use Psr\EventDispatcher\ListenerProviderInterface;
 use Fig\EventDispatcher\TaggedProviderTrait;
 
-class TaggedListenerProvider extends ListenerProvider
+/**
+ * Mapper from a tagged event to the tagged listeners that are applicable to that event.
+ * Listeners can opt to handle all tags by using the tag '*'.
+ *
+ * @see https://www.php-fig.org/psr/psr-14/
+ */
+class TaggedListenerProvider implements ListenerProviderInterface
 {
     use TaggedProviderTrait;
 

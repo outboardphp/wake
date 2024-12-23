@@ -10,24 +10,9 @@ use Technically\CallableReflection\Parameters\TypeReflection;
 class ListenerCollection
 {
     /**
-     * @param array $listeners Takes the form of: ['EventClass' => [callable, ...], ...]
+     * @param array<string, callable[]> $listeners Takes the form of: ['EventClass' => [callable, ...], ...]
      */
-    public function __construct(private array $listeners = []) {}
-
-    /**
-     * Get listeners for event names specified.
-     *
-     * @param string ...$eventNames event class names
-     * @return iterable<callable> listeners
-     */
-    public function getListenersForEvents(string ...$eventNames): iterable
-    {
-        foreach ($eventNames as $eventName) {
-            if (isset($this->listeners[$eventName])) {
-                yield from $this->listeners[$eventName];
-            }
-        }
-    }
+    public function __construct(public readonly array $listeners = []) {}
 
     /**
      * Adds a new listener to the collection.

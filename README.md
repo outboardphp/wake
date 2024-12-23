@@ -41,7 +41,7 @@ composer require garrettw/venue
 ```php
 use Venue\ListenerCollection;
 use Venue\ListenerProvider;
-use Venue\Dispatcher;
+use Venue\EventDispatcher;
 
 $listeners = (new ListenerCollection())
     ->add(function (stdClass $event) {
@@ -60,7 +60,7 @@ $listeners = (new ListenerCollection())
 
 // Now we have 1 listener in the collection, ready to use, so we initialize
 // a ListenerProvider with our collection, and then give that to the Dispatcher.
-$dispatcher = new Dispatcher(new ListenerProvider($listeners));
+$dispatcher = new EventDispatcher(new ListenerProvider($listeners));
 // and now our dispatcher is set up and ready as well.
 
 // Let's create a very basic type of event object that the listener above will handle:
@@ -68,7 +68,10 @@ $event = new stdClass;
 $event->data = 'some string';
 
 // And now we'll fire it off and the registered listener(s) will handle it immediately.
+// You can use the PSR-compliant method call like so:
 $dispatcher->dispatch($event);
+// ... or you can just invoke it directly, like this:
+// $dispatcher($event);
 ```
 
 ## Creating Event Classes

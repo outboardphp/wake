@@ -17,9 +17,10 @@ class ListenerProvider implements ListenerProviderInterface
 
     public function getListenersForEvent(object $event): iterable
     {
-        // now find all listeners accepting objects that match this event class
-        yield from $this->listeners->getListenersForEvents($event::class);
-        yield from $this->listeners->getListenersForEvents(...array_values(class_parents($event)));
-        yield from $this->listeners->getListenersForEvents(...array_values(class_implements($event)));
+        foreach ($this->listeners->listeners as $type => $listeners) {
+            if ($event instanceof $type) {
+                yield from $listeners;
+            }
+        }
     }
 }

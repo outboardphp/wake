@@ -14,9 +14,14 @@ use Venue\Contracts\Hook;
  *
  * @see https://www.php-fig.org/psr/psr-14/
  */
-class Dispatcher implements EventDispatcherInterface
+class EventDispatcher implements EventDispatcherInterface
 {
     public function __construct(public readonly ListenerProviderInterface $provider) {}
+
+    public function __invoke(object $event): object
+    {
+        return $this->dispatch($event);
+    }
 
     public function dispatch(object $event): object
     {

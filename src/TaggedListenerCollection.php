@@ -10,7 +10,7 @@ use Technically\CallableReflection\Parameters\TypeReflection;
 class TaggedListenerCollection
 {
     /**
-     * @param array $listeners Takes the form of: ['tagName' => ['EventClass' => [callable, ...], ...], ...]
+     * @param array<string, array<string, callable[]>> $listeners Takes the form of: ['tagName' => ['EventClass' => [callable, ...], ...], ...]
      */
     public function __construct(private array $listeners = []) {}
 
