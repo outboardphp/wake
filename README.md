@@ -4,6 +4,22 @@ Venue is a full-featured, [PSR-14](http://www.php-fig.org/psr/psr-14/)-compliant
 It includes an event dispatcher and a basic listener provider, as per the spec, and adds listener collections and
 other variations on listener providers to meet special needs.
 
+The goal of this library is to meet as many needs as possible with code that is as generic and flexible as possible. \
+Here are two examples where I take a different approach than that of [Tukio](https://github.com/crell/tukio):
+
+1. Logging
+   - Tukio lets you pass a PSR-3 logger as a second constructor parameter when creating a dispatcher.
+     In short, this means the dispatcher has special awareness of the logger and handles it in a unique way.
+   - Venue's dispatcher doesn't treat loggers differently than anything else. In fact, it's up to you to create
+     listeners that interact with a logger based on your needs.
+     - For example, if you want to log all events, you would create a listener that typehints `stdClass`, call the logger inside, and pass that listener to the 
+       dispatcher.
+     - If you wanted to log exceptions, same story: just create a listener that typehints `\Exception` instead.
+     - Now if you wanted to *avoid* Exceptions in the generic event logger, you could just add a sniff in the body of the listener to ignore that type.
+2. Dispatcher
+   - Tukio provides a special dispatcher for debugging which first logs each event and then hands off to the actual dispatcher to process the event.
+   - As mentioned above, Venue's standard dispatcher is perfectly happy to accept a listener that is type-hinted to match all objects; it is trivial to create a listener accordingly that will log all events.
+
 Currently in the middle of a major refactoring so documentation and tests are incomplete.
 
 ### Inspired by
@@ -13,7 +29,7 @@ Currently in the middle of a major refactoring so documentation and tests are in
 
 ### Planned features
 - Event/listener ordering (priority, before/after)
-- Consider dispatcher mechanism for error tracking/debugging
+- Consider dispatcher behavior for error tracking/debugging listeners; maybe put ones that typehint stdClass or Exception at the highest priority?
 - Support async event processing via ListenerProviders that interface with MQs/DBs
 
 ### Future inspiration to be taken from:
