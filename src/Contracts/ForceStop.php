@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Venue\Contracts;
+namespace Outboard\Wake\Contracts;
 
 use Psr\EventDispatcher\StoppableEventInterface;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Venue\Contracts;
+namespace Outboard\Wake\Contracts;
 
 /**
  * Hooks support bidirectional communication, as they keep track of values returned by listeners.

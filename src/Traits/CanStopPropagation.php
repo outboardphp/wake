@@ -1,6 +1,6 @@
 <?php
 
-namespace Venue\Traits;
+namespace Outboard\Wake\Traits;
 
 /**
  * A simple implementation for Psr\EventDispatcher\StoppableEventInterface

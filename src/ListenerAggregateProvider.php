@@ -1,6 +1,6 @@
 <?php
 
-namespace Venue;
+namespace Outboard\Wake;
 
 /**
  * @inheritDoc

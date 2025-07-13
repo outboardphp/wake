@@ -1,10 +1,23 @@
 {
-	"name": "garrettw/venue",
-	"type": "library",
+	"name": "outboardphp/wake",
 	"description": "PHP event-dispatcher library following PSR-14 and the Mediator/Observer patterns",
+    "type": "library",
 	"keywords": ["event","listener","dispatcher","hook","mediator","publish-subscribe","observer","psr-14"],
-	"homepage": "https://github.com/garrettw/venue",
-	"license": "MIT",
+	"homepage": "https://github.com/outboardphp/wake",
+    "support": {
+        "issues": "https://github.com/outboardphp/outboard/issues"
+    },
+	"license": "MPL-2.0",
+    "authors": [
+        {
+            "name": "Garrett Whitehorn",
+            "homepage": "http://garrettw.net/",
+            "role": "Lead Developer"
+        }
+    ],
+    "provide": {
+        "psr/event-dispatcher-implementation": "1.0.0"
+    },
 	"require": {
 		"php": ">=8.1",
 		"psr/container": "^2.0",
@@ -16,12 +29,9 @@
 		"phpspec/phpspec": "^7.4",
         "friendsofphp/php-cs-fixer": "^3.17.0"
 	},
-	"provide": {
-        "psr/event-dispatcher-implementation": "1.0.0"
-    },
 	"autoload": {
 		"psr-4": {
-			"Venue\\": "src/"
+			"Outboard\\Wake\\": "src/"
 		}
 	}
 }

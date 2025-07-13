@@ -1,4 +1,4 @@
 suites:
-    venue:
-        namespace: Venue
-        psr4_prefix: Venue
+    wake:
+        namespace: Outboard\Wake
+        psr4_prefix: Outboard\Wake

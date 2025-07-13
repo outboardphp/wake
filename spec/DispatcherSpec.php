@@ -1,12 +1,12 @@
 <?php
 
-namespace spec\Venue;
+namespace spec\Outboard\Wake;
 
 use PhpSpec\ObjectBehavior;
 use Psr\EventDispatcher\ListenerProviderInterface;
-use Venue\Dispatcher;
-use Venue\Event;
-use Venue\NamedEvent;
+use Outboard\Wake\Dispatcher;
+use Outboard\Wake\Event;
+use Outboard\Wake\NamedEvent;
 
 class DispatcherSpec extends ObjectBehavior
 {
@@ -49,7 +49,7 @@ class DispatcherSpec extends ObjectBehavior
 
         $this->dispatch(new NamedEvent('randomname'));
 
-        $this->held[0]->shouldBeAnInstanceOf('Venue\NamedEvent');
+        $this->held[0]->shouldBeAnInstanceOf('Outboard\Wake\NamedEvent');
         $this->held[0]->name->shouldEqual('randomname');
     }
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Venue;
+namespace Outboard\Wake;
 
 use Technically\CallableReflection\CallableReflection;
 use Technically\CallableReflection\Parameters\TypeReflection;

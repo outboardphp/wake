@@ -1,9 +1,9 @@
 <?php
 
-namespace spec\Venue;
+namespace spec\Outboard\Wake;
 
 use PhpSpec\ObjectBehavior;
-use Venue\NamedEvent;
+use Outboard\Wake\NamedEvent;
 
 class NamedEventSpec extends ObjectBehavior
 {

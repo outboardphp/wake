@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Venue;
+namespace Outboard\Wake;
 
 use Psr\EventDispatcher\ListenerProviderInterface;
 

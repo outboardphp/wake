@@ -1,13 +1,13 @@
 <?php
 
-use Venue\Dispatcher;
-use Venue\NamedEvent;
-use Venue\Listener\Collection;
+use Outboard\Wake\Dispatcher;
+use Outboard\Wake\NamedEvent;
+use Outboard\Wake\Listener\Collection;
 
 /**
- * A default Venue Listener
+ * A default Wake Listener
  *
- * This is the default Venue Listener; other plugins/listeners
+ * This is the default Wake Listener; other plugins/listeners
  * will override its functionality.
  */
 class Formatter

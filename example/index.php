@@ -4,10 +4,10 @@ define('BASEDIR', dirname(__FILE__));
 
 require_once BASEDIR . '/../vendor/autoload.php';
 
-use Venue\Dispatcher;
-use Venue\Listener\Collection;
-use Venue\Listener\Provider;
-use Venue\NamedEvent;
+use Outboard\Wake\Dispatcher;
+use Outboard\Wake\Listener\Collection;
+use Outboard\Wake\Listener\Provider;
+use Outboard\Wake\NamedEvent;
 
 // Include the listeners
 include BASEDIR . '/observers/Formatter.php';

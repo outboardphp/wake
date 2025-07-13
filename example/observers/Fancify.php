@@ -1,10 +1,10 @@
 <?php
 
-use Venue\NamedEvent;
-use Venue\Listener\Collection;
+use Outboard\Wake\NamedEvent;
+use Outboard\Wake\Listener\Collection;
 
 /**
- * An example Venue Listener
+ * An example Wake Listener
  *
  * This is an example Listener/plugin, which will modify
  * previously called listeners. This example Listener enhances

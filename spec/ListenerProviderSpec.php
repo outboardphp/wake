@@ -1,9 +1,9 @@
 <?php
 
-namespace spec\Venue;
+namespace spec\Outboard\Wake;
 
 use PhpSpec\ObjectBehavior;
-use Venue\ListenerProvider;
+use Outboard\Wake\ListenerProvider;
 
 class ListenerProviderSpec extends ObjectBehavior
 {

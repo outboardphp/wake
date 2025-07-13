@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Venue\Traits;
+namespace Outboard\Wake\Traits;
 
 trait Hook
 {

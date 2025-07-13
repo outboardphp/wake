@@ -1,6 +1,6 @@
-# Venue
+# Wake
 
-Venue is a full-featured, [PSR-14](http://www.php-fig.org/psr/psr-14/)-compliant event library for PHP, combining the Mediator and Observer patterns.
+Outboard Wake is a full-featured, [PSR-14](http://www.php-fig.org/psr/psr-14/)-compliant event library for PHP, combining the Mediator and Observer patterns.
 It includes an event dispatcher and a basic listener provider, as per the spec, and adds listener collections and
 other variations on listener providers to meet special needs.
 
@@ -10,7 +10,7 @@ Here are two examples where I take a different approach than that of [Tukio](htt
 1. Logging
    - Tukio lets you pass a PSR-3 logger as a second constructor parameter when creating a dispatcher.
      In short, this means the dispatcher has special awareness of the logger and handles it in a unique way.
-   - Venue's dispatcher doesn't treat loggers differently than anything else. In fact, it's up to you to create
+   - Wake's dispatcher doesn't treat loggers differently than anything else. In fact, it's up to you to create
      listeners that interact with a logger based on your needs.
      - For example, if you want to log all events, you would create a listener that typehints `stdClass`, call the logger inside, and pass that listener to the 
        dispatcher.
@@ -18,7 +18,7 @@ Here are two examples where I take a different approach than that of [Tukio](htt
      - Now if you wanted to *avoid* Exceptions in the generic event logger, you could just add a sniff in the body of the listener to ignore that type.
 2. Dispatcher
    - Tukio provides a special dispatcher for debugging which first logs each event and then hands off to the actual dispatcher to process the event.
-   - As mentioned above, Venue's standard dispatcher is perfectly happy to accept a listener that is type-hinted to match all objects; it is trivial to create a listener accordingly that will log all events.
+   - As mentioned above, Wake's standard dispatcher is perfectly happy to accept a listener that is type-hinted to match all objects; it is trivial to create a listener accordingly that will log all events.
 
 Currently in the middle of a major refactoring so documentation and tests are incomplete.
 
@@ -42,14 +42,14 @@ Currently in the middle of a major refactoring so documentation and tests are in
 
 ## Install
 ```bash
-composer require garrettw/venue
+composer require outboardphp/wake
 ```
 
 ## Basic Usage
 ```php
-use Venue\ListenerCollection;
-use Venue\ListenerProvider;
-use Venue\EventDispatcher;
+use Wake\ListenerCollection;
+use Wake\ListenerProvider;
+use Wake\EventDispatcher;
 
 $listeners = (new ListenerCollection())
     ->add(function (stdClass $event) {
@@ -83,7 +83,7 @@ $dispatcher->dispatch($event);
 ```
 
 ## Creating Event Classes
-Venue provides a few interfaces and traits you may want to use when writing
+Wake provides a few interfaces and traits you may want to use when writing
 event classes.
 
 ### Stopping Event Propagation
@@ -96,17 +96,17 @@ public function isPropagationStopped(): bool;
 You can then implement that method yourself with any logic you want, or you can
 include this line in your class:
 ```php
-    use \Venue\Traits\CanStopPropagation;
+    use \Wake\Traits\CanStopPropagation;
 ```
 and control the behavior elsewhere within the class by simply setting
 `$this->stopPropagation` to `true`.
 
 #### External Control
 On the other hand, if you want to also allow code outside of the event to control its
-propagation, have your event class implement `Venue\Contracts\ForceStop` with the
+propagation, have your event class implement `Wake\Contracts\ForceStop` with the
 following trait:
 ```php
-    use \Venue\Traits\CanBeStopped;
+    use \Wake\Traits\CanBeStopped;
 ```
 This adds a method called `stopPropagation()` to your event class.
 
@@ -117,12 +117,12 @@ arbitrary behavior, this library does not make any assumptions about how
 events behave.
 
 In order to better support the use case of bidirectional data flow,
-Venue includes a specific interface/trait combination to help you build
+Wake includes a specific interface/trait combination to help you build
 bidirectional event classes, which we call Hooks.
-- Interface: `Venue\Contracts\Hook`
-- Trait: `Venue\Traits\Hook`
+- Interface: `Wake\Contracts\Hook`
+- Trait: `Wake\Traits\Hook`
 
-The Venue Dispatcher is aware of the `Hook` interface, so when it encounters
+The Wake Dispatcher is aware of the `Hook` interface, so when it encounters
 one, it will store the return value of the listener(s) it calls back into the
 event object. So after all listeners are called for a given Hook, and the
 Dispatcher returns the event object, you can just call `getResult()` on the

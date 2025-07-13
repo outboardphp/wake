@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Venue;
+namespace Outboard\Wake;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
-use Venue\Contracts\Hook;
+use Outboard\Wake\Contracts\Hook;
 
 /**
  * Dispatches events to applicable listeners via the registered provider.
